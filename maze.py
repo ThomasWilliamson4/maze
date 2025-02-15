@@ -23,23 +23,37 @@ class Maze():
         self._create_cells()
         
     def _create_cells(self):
-        self._cells = [[Cell(self.win) for _ in range(self.num_rows)] for _ in range(self.num_cols)]
+
+        self._cells = [[Cell(self.win) for _ in range(self.num_cols)] for _ in range(self.num_rows)]
         for i in range(len(self._cells)):
             for j in range(len(self._cells[i])):
                 self._draw_cell(i, j)
 
 
     def _draw_cell(self, i, j):
-        pos_x = (i*self.cell_size_x) + self.x1
-        pos_y = (j*self.cell_size_y) + self.y1
+        pos_x = (j*self.cell_size_x) + self.x1
+        pos_y = (i*self.cell_size_y) + self.y1
         self._cells[i][j].draw(pos_x, pos_y, pos_x+ self.cell_size_x, pos_y+self.cell_size_y)
         self._animate()
+
     
     def _animate(self):
         if self.win is None:
             return        
         self.win.redraw()
         time.sleep(0.05)
+
+    def _break_entrance_and_exit(self):
+        start = self._cells[0][0]
+        start.has_top_wall = False
+        end = self._cells[self.num_rows-1][self.num_cols-1]
+        end.has_bottom_wall = False
+        end.draw(end._x1, end._y1, end._x2, end._y2)
+        start.draw(start._x1, start._y1, start._x2, start._y2)
+        
+        
+        
+        
 
 
 class Cell():
@@ -61,18 +75,22 @@ class Cell():
         self._x2 = x2
         self._y1 = y1
         self._y2 = y2
-        if self.has_left_wall:
-            line = Line(Point(x1, y1),Point(x1, y2))
-            self._win.draw_line(line, "black")
-        if self.has_right_wall:
-            line = Line(Point(x2, y1),Point(x2, y2))
-            self._win.draw_line(line, "black")
-        if self.has_top_wall:
-            line = Line(Point(x1, y1),Point(x2, y1))
-            self._win.draw_line(line, "black")
-        if self.has_bottom_wall:
-            line = Line(Point(x1, y2),Point(x2, y2))
-            self._win.draw_line(line, "black")
+        
+        color = "black" if self.has_left_wall else "#d9d9d9"
+        line = Line(Point(x1, y1),Point(x1, y2))
+        self._win.draw_line(line, color)
+        
+        color = "black" if self.has_right_wall else "#d9d9d9"
+        line = Line(Point(x2, y1),Point(x2, y2))
+        self._win.draw_line(line, color)
+
+        color = "black" if self.has_top_wall else "#d9d9d9"
+        line = Line(Point(x1, y1),Point(x2, y1))
+        self._win.draw_line(line, color)
+
+        color = "black" if self.has_bottom_wall else "#d9d9d9"
+        line = Line(Point(x1, y2),Point(x2, y2))
+        self._win.draw_line(line, color)
 
     def draw_move(self, to_cell, undo=False):
         from_x = (self._x1 + self._x2)/2
