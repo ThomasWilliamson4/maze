@@ -28,6 +28,7 @@ class Maze():
         self._create_cells()
         self._break_entrance_and_exit()
         self._break_walls_r(0,0)
+        self._reset_cells_visited()
 
         
     def _create_cells(self):
@@ -67,9 +68,9 @@ class Maze():
                 to_visit.append((i-1, j))
             if j > 0 and not self._cells[i][j-1]._visited:
                 to_visit.append((i, j-1))
-            if i +1  < self.num_cols and not self._cells[i+1][j]._visited:
+            if i + 1  < self.num_rows and not self._cells[i+1][j]._visited:
                 to_visit.append((i+1, j))
-            if j +1  < self.num_rows and not self._cells[i][j+1]._visited:
+            if j +1  < self.num_cols and not self._cells[i][j+1]._visited:
                 to_visit.append((i, j+1))
             if len(to_visit) == 0:
                 self._draw_cell(i, j)
@@ -79,20 +80,27 @@ class Maze():
             new_i = cell[0]
             new_j = cell[1]
 
-            if i+1 == new_i:
-                self._cells[i][j].has_right_wall = False
-                self._cells[new_i][new_j].has_left_wall = False
-            if i-1 == new_i:
-                self._cells[i][j].has_left_wall = False
-                self._cells[new_i][new_j].has_right_wall = False
-            if j+1 == new_j:
-                self._cells[i][j].has_top_wall = False
-                self._cells[new_i][new_j].has_bottom_wall = False
-            if j-1 == new_j:
+            if i+1 == new_i: # moving down a row in the list
                 self._cells[i][j].has_bottom_wall = False
                 self._cells[new_i][new_j].has_top_wall = False
+            if i-1 == new_i:
+                self._cells[i][j].has_top_wall = False
+                self._cells[new_i][new_j].has_bottom_wall = False
+            if j+1 == new_j:
+                self._cells[i][j].has_right_wall = False
+                self._cells[new_i][new_j].has_left_wall = False
+            if j-1 == new_j:
+                self._cells[i][j].has_left_wall = False
+                self._cells[new_i][new_j].has_right_wall = False
             
             self._break_walls_r(new_i, new_j)
+        
+    def _reset_cells_visited(self):
+        for i in range(len(self._cells)):
+            for j in range(len(self._cells[i])):
+                self._cells[i][j]._visited = False
+
+
             
 
 
